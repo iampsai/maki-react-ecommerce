@@ -10,7 +10,7 @@ A full-stack e-commerce application built with React and Node.js, featuring a mo
 - **Featured Products** - Highlighted products displayed on the homepage
 - **Shopping Cart** - Add, update, and remove items from your shopping cart
 - **Checkout Process** - Seamless checkout experience with multiple payment options:
-  - Credit Card payments via Stripe
+  - Credit Card payments via payment gateway (not yet implemented)
   - Cash on Delivery
   - In-store Pickup
 - **Order Tracking** - View order history and current order status
@@ -33,7 +33,6 @@ A full-stack e-commerce application built with React and Node.js, featuring a mo
 - **Axios** - HTTP client for API requests
 - **Recharts** - Charting library for analytics visualization
 - **React Hot Toast** - For user notifications
-- **Stripe.js** - For secure payment processing
 - **Vite** - Fast build tool and development server
 
 ### Backend
@@ -46,7 +45,6 @@ A full-stack e-commerce application built with React and Node.js, featuring a mo
 - **Cloudinary** - Cloud storage for product images
 - **Redis** - In-memory data structure store for caching
 - **PDFKit** - PDF generation for order receipts
-- **Stripe** - Payment processing API
 
 ## Project Structure
 
@@ -89,7 +87,7 @@ react-ecommerce/
 - Real-time cart updates
 
 ### Payment Processing
-- Secure credit card processing with Stripe
+- Secure credit card processing using Payment gateway - (not yet implemented)
 - Alternative payment methods (Cash on Delivery, In-store Pickup)
 
 ### Order Management
