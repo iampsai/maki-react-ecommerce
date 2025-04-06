@@ -108,8 +108,12 @@ react-ecommerce/
 1. Clone the repository
 2. Install dependencies:
    ```
+   # Root folder
    npm install
-   cd frontend && npm install
+
+   # frontend folder
+   cd frontend
+   npm install
    ```
 
 3. Create a `.env` file in the root directory with the following variables:
@@ -131,7 +135,8 @@ react-ecommerce/
    npm run dev
    
    # In a separate terminal, start frontend server
-   cd frontend && npm run dev
+   cd frontend
+   npm run dev
    ```
 
 ## License
