@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios from "../lib/axios";
-import { Package, Truck, CheckCircle, XCircle, Clock, CreditCard, DollarSign, Store, FileText, Download } from "lucide-react";
+import { Package, Truck, CheckCircle, XCircle, Clock, CreditCard, PhilippinePeso, Store, FileText } from "lucide-react";
 
 const OrdersTab = () => {
   const [orders, setOrders] = useState([]);
@@ -119,7 +119,7 @@ const OrdersTab = () => {
       case "card":
         return <CreditCard className="h-5 w-5 text-blue-500" />;
       case "cod":
-        return <DollarSign className="h-5 w-5 text-green-500" />;
+        return <PhilippinePeso className="h-5 w-5 text-green-500" />;
       case "pickup":
         return <Store className="h-5 w-5 text-purple-500" />;
       default:
