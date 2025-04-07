@@ -25,7 +25,7 @@ const Navbar = () => {
           <nav className={"flex flex-wrap items-center gap-4"}>
             <Link to={"/"} className={"text-gray-300 hover:text-emerald-400 transition duration-300 ease-in-out"}>Home</Link>
 
-            {user && user?.role !== "admin" && (
+            {user && (
               <Link to={"/cart"} className={"relative group text-gray-300 hover:text-emerald-400 transition duration-300" +
                 " ease-in-out"}>
                 <ShoppingCart className={"inline-block mr-1 group-hover:text-emerald-400 transition duration-300 ease-in-out"} size={20}/>
