@@ -4,6 +4,8 @@ import {useUserStore} from "../stores/useUserStore.js";
 import {useCartStore} from "../stores/useCartStore.js";
 
 const Navbar = () => {
+  const navbarTitle = "Maki E-Commerce";
+
   const {user, logout} = useUserStore();
   const isAdmin = user?.role === "admin";
 
@@ -19,7 +21,7 @@ const Navbar = () => {
       <div className={"container mx-auto px-4 py-3"}>
         <div className={"flex flex-wrap items-center justify-between"}>
           <Link to={"/"} className={"text-2xl font-bold text-emerald-400 items-center space-x-2 flex"}>
-            E-Commerce
+            {navbarTitle}
           </Link>
 
           <nav className={"flex flex-wrap items-center gap-4"}>
