@@ -117,14 +117,18 @@ react-ecommerce/
 3. Create a `.env` file in the root directory with the following variables:
    ```
    PORT=5000
-   MONGODB_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
    CLIENT_URL=http://localhost:5173
+
+   MONGO_URI=your_mongodb_connection_string
+
+   ACCESS_TOKEN_SECRET=access_token_secret
+   REFRESH_TOKEN_SECRET=refresh_token_secret
+
    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
    CLOUDINARY_API_KEY=your_cloudinary_api_key
-   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-   STRIPE_SECRET_KEY=your_stripe_secret_key
-   REDIS_URL=your_redis_url
+   CLOUDINARY_API_SECRET=your_cloudinary_secret_key
+
+   UPSTASH_REDIS_URL=your_redis_url
    ```
 
 4. Start the development servers:
