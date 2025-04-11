@@ -156,9 +156,10 @@ export const createAlternativeOrder = async (req, res) => {
       return res.status(400).json({ error: "Invalid product data" });
     }
 
-    if (!paymentMethod || (paymentMethod !== 'cod' && paymentMethod !== 'pickup')) {
-      return res.status(400).json({ error: "Invalid payment method" });
-    }
+    // Uncomment this if you want to restrict payment methods
+    // if (!paymentMethod || (paymentMethod !== 'cod' && paymentMethod !== 'pickup')) {
+    //   return res.status(400).json({ error: "Invalid payment method" });
+    // }
 
     // Calculate total amount
     let subtotal = 0;

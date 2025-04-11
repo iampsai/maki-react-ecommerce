@@ -47,14 +47,29 @@ const CheckoutPage = () => {
     try {
       if (paymentMethod === 'card') {
         // Handle Stripe payment
-        const response = await axios.post('/payment/create-checkout-session', {
-          products: cart,
-          couponCode: coupon ? coupon.code : null
-        });
+        // const response = await axios.post('/payment/create-checkout-session', {
+        //   products: cart,
+        //   couponCode: coupon ? coupon.code : null
+        // });
         
         // For Stripe, we'll clear the cart after successful payment callback
         // Redirect to Stripe checkout
-        window.location.href = response.data.url;
+        // console.log('Redirecting to Stripe checkout...', response.data);
+
+        // For mock payment, use create-alternative-order endpoint
+        const response = await axios.post('/payment/create-alternative-order', {
+          products: cart,
+          couponCode: coupon ? coupon.code : null,
+          paymentMethod,
+          customerInfo: formData
+        });
+
+        if (response.data.success) {
+          // Clear the cart both in the backend and frontend
+          await clearCart();
+          navigate(`/purchase-success?session_id=${response.data.orderId}`);
+          toast.success('Order placed successfully!');
+        }
       } else {
         // Handle cash on delivery or in-store pickup
         const response = await axios.post('/payment/create-alternative-order', {
