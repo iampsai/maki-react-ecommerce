@@ -42,17 +42,41 @@ export const createCheckoutSession = async (req, res) => {
       totalAmount -= Math.round(totalAmount * (coupon.discountPercentage / 100));
     }
 
-    // const session = await createCheckoutSession(lineItems, totalAmount, couponCode);
+    // Uncomment this if you want to use Stripe checkout or any alternative payment method
+    // const session = await stripe.checkout.session.create({
+    //   payment_method_types: ["card"],
+    //   line_items: lineItems,
+    //   mode: "payment",
+    //   success_url: `process.env.CLIENT_URL/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+    //   cancel_url: `process.env.CLIENT_URL/payment-cancelled`,
+    //   discounts: coupon ? [{coupon: await createStripeCoupon(coupon.discountPercentage)}] : [],
+    //   metadata: {
+    //     userId: req.user._id.toString,
+    //     products: JSON.stringify(
+    //       products.map((product) => ({
+    //         productId: product._id,
+    //         quantity: product.quantity,
+    //         price: product.price
+    //       }))
+    //     ),
+    //     coupon: JSON.stringify(coupon)
+    //   },
+    // });
 
-    const session = await stripe.checkout.session.create({
-      payment_method_types: ["card", "cash_on_delivery", "pickup_in_store"],
+    // Create a fake session for testing
+    const sessionId = new mongoose.Types.ObjectId().toString();
+    const session = {
+      id: sessionId,
+      payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `process.env.CLIENT_URL/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `process.env.CLIENT_URL/payment-cancelled`,
+      payment_status: "paid",
+      amount_total: totalAmount,
+      success_url: `${process.env.CLIENT_URL}/payment-success?session_id=${sessionId}`,
+      cancel_url: `${process.env.CLIENT_URL}/payment-cancelled`,
       discounts: coupon ? [{coupon: await createStripeCoupon(coupon.discountPercentage)}] : [],
       metadata: {
-        userId: req.user._id.toString,
+        userId: req.user._id.toString(),
         products: JSON.stringify(
           products.map((product) => ({
             productId: product._id,
@@ -60,11 +84,12 @@ export const createCheckoutSession = async (req, res) => {
             price: product.price
           }))
         ),
-        coupon: JSON.stringify(coupon)
-      },
-    });
+        couponCode: coupon ? coupon.code : null
+      }
+    };
 
-    if (totalAmount >= 20000) {
+    // Change this accordingly
+    if (totalAmount >= 2000) {
       await createNewCoupon(req.user._id);
     }
 
@@ -82,24 +107,52 @@ export const checkOutSuccess = async (req, res) => {
       return res.status(400).json({message: "Session ID is required"});
     }
 
-    const session = await stripe.checkout.sessions.retrieve(session_id);
+    // For a real Stripe implementation, you would uncomment this:
+    // const session = await stripe.checkout.sessions.retrieve(session_id);
+    
+    // For the fake payment implementation, create a mock session
+    // In a real app, you would store session data in a database and retrieve it here
+    const session = {
+      id: session_id,
+      payment_status: "paid",
+      amount_total: 0, // This would be set from the stored session
+      metadata: {
+        userId: req.user._id.toString(),
+        products: JSON.stringify(req.user.cartItems.map(item => ({
+          productId: item.product._id || item.product,
+          quantity: item.quantity,
+          price: item.price
+        }))),
+        couponCode: null // This would be set from the stored session if a coupon was used
+      }
+    };
+    
+    console.log("Session:", session);
+    
     if (session.payment_status === "paid") {
       if (session.metadata.couponCode) {
         await Coupon.findOneAndUpdate({
-          couponCode: session.metadata.couponCode,
+          code: session.metadata.couponCode,
           userId: req.user._id
         }, {isActive: false});
       }
 
       const products = JSON.parse(session.metadata.products);
+      
+      // Calculate total amount from products if not available in session
+      let totalAmount = session.amount_total / 100;
+      if (!totalAmount) {
+        totalAmount = products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+      }
+      
       const newOrder = new Order({
-        userId: session.metadata.userId,
+        userId: req.user._id,
         products: products.map((product) => ({
           product: product.productId,
           quantity: product.quantity,
           price: product.price
         })),
-        totalAmount: session.amount_total / 100,
+        totalAmount: totalAmount,
         paymentMethod: "card",
         status: "paid",
         paymentSessionId: session_id,
@@ -156,10 +209,9 @@ export const createAlternativeOrder = async (req, res) => {
       return res.status(400).json({ error: "Invalid product data" });
     }
 
-    // Uncomment this if you want to restrict payment methods
-    // if (!paymentMethod || (paymentMethod !== 'cod' && paymentMethod !== 'pickup')) {
-    //   return res.status(400).json({ error: "Invalid payment method" });
-    // }
+    if (!paymentMethod || (paymentMethod !== 'cod' && paymentMethod !== 'pickup')) {
+      return res.status(400).json({ error: "Invalid payment method" });
+    }
 
     // Calculate total amount
     let subtotal = 0;
@@ -194,7 +246,7 @@ export const createAlternativeOrder = async (req, res) => {
       totalAmount,
       paymentMethod,
       status: paymentMethod === 'cod' ? 'pending' : 'processing',
-      // Generate a unique ID for alternative payment methods for tracking
+      // Generate a unique ID for alternative payment methods
       paymentSessionId: `${paymentMethod}-${req.user._id}-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`,
       customerInfo: {
         fullName: customerInfo.fullName,

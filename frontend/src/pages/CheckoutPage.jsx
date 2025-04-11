@@ -64,6 +64,8 @@ const CheckoutPage = () => {
           customerInfo: formData
         });
 
+        console.log('Redirecting to Stripe checkout...', response.data);
+
         if (response.data.success) {
           // Clear the cart both in the backend and frontend
           await clearCart();
